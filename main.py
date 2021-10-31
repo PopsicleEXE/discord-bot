@@ -348,7 +348,7 @@ commands = {
     'timessworn': {'command':getSworn,'description':"tells you how many times the ai has evaluated something as swearing in the stinky men server",'arguments':{}},
     'xxx': {'command':zerkOff,'description':"psycho streamer! he zerked off on stream...",'arguments':{}},
     'meow': {'command':cat,'description':"10 cats, free of charge!",'arguments':{}},
-    'randomLine': {'command':randomLine,'description':"gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.",'arguments':{}},
+    'randomline': {'command':randomLine,'description':"gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.",'arguments':{}},
     'help': {'command':help,'description':'shows this help message','arguments':{}},
     'dice': {'command':dice,'description':'get 2.5 billion dollars of debt','arguments':{'number of dice'}},
     'debt': {'command':debt,'description':'shows you how much debt you have from playing dice. or playing noita.','arguments':{}},

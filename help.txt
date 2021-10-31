@@ -16,8 +16,8 @@ Usage: >xxx
 >meow: 10 cats, free of charge!
 Usage: >meow
 
->randomLine: gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.
-Usage: >randomLine
+>randomline: gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.
+Usage: >randomline
 
 >help: shows this help message
 Usage: >help
