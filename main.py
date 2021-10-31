@@ -385,4 +385,4 @@ auth = ""
 with open("authentication.txt") as authFile:
     auth = authFile.read()
 
-client.run("auth")
+client.run(auth)
