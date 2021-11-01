@@ -63,7 +63,7 @@ def getPoints(player):
         table = json.loads(points.read())
         points.close()
         if str(player.id) in table:
-            return table[player.id]
+            return table[str(player.id)]
         else:
             return 0
 
