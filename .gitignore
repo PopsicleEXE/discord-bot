@@ -142,3 +142,6 @@ work.cooldowns
 
 # Cached images
 jerma-text-slices/*
+
+# Old files
+archive/*
