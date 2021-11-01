@@ -313,10 +313,14 @@ async def debt(msg: discord.Message):
         if str(msg.author.id) in table:
             debt = int(table[str(msg.author.id)])
             if debt != 0:
-                if debt < 0:
+                if debt < -1:
                     await msg.channel.send("you are "+str(debt*-1)+" points in debt!")
-                else:
+                elif debt > 1:
                     await msg.channel.send("you have "+str(debt)+" points")
+                elif debt == 1:
+                    await msg.channel.send("you have 1 point")
+                elif debt == -1:
+                    await msg.channel.send("you are 1 point in debt")
             else:
                 await msg.channel.send("you have no points")
         else:
