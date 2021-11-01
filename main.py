@@ -277,7 +277,9 @@ async def help(msg: discord.Message):
     await msg.channel.send(file=discord.File("help.txt"))
 
 async def dice(msg: discord.Message):
-    diceCount = max(1,min(100,int(msg.content.split(" ")[1]))) or 1
+    diceCount = max(1,min(100,int(msg.content.split(" ")[1])))
+    if not diceCount or type(diceCount) != int:
+        diceCount = 1
     if diceCount:
         roll = 0
         for i in range(diceCount):  
@@ -291,6 +293,17 @@ async def dice(msg: discord.Message):
             await msg.reply("you lost "+str(roll*-1)+" points")
         else:
             await msg.reply("you got "+str(roll)+" points")
+
+async def coinFlip(msg: discord.Message):
+    bet = max(1,min(100,int(msg.content.split(" ")[1]))) or 1
+    if bet:
+        roll = random.randint(0,1)
+        if roll == True:
+            addPoints(msg.author,bet)
+            await msg.reply("you got "+str(roll)+" points")
+        else:
+            addPoints(msg.author,-bet)
+            await msg.reply("you lost "+str(roll*-1)+" points")
 
 async def debt(msg: discord.Message):
     with open("player.points") as points:
@@ -343,6 +356,7 @@ commands = {
     'randomline': {'command':randomLine,'description':"gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.",'arguments':{}},
     'help': {'command':help,'description':'shows this help message','arguments':{}},
     'dice': {'command':dice,'description':'get 2.5 billion dollars of debt','arguments':{'number of dice'}},
+    'coinflip': {'command':coinFlip,'description':'heads, tails, or crippling debt.','arguments':{'bet'}},
     'debt': {'command':debt,'description':'shows you how much debt you have from playing dice. or playing noita.','arguments':{}},
     'work': {'command':work,'description':'work harder, not smarter','arguments':{}}
 }
