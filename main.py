@@ -315,6 +315,8 @@ async def debt(msg: discord.Message):
                     await msg.channel.send("you are "+str(debt*-1)+" points in debt!")
                 else:
                     await msg.channel.send("you have "+str(debt)+" points")
+        else:
+            await msg.channel.send("you have 0 points")
         points.close()
 
 def setCooldown(msg: discord.Message):
