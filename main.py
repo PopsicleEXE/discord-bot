@@ -296,14 +296,16 @@ async def dice(msg: discord.Message):
 
 async def coinFlip(msg: discord.Message):
     bet = int(msg.content.split(" ")[1])
-    if bet:
+    if type(bet) != int or not bet > 0:
+        bet = 10
+    if bet > 0:
         roll = random.randint(0,1)
         if roll == True:
             addPoints(msg.author,bet)
             await msg.reply("you got "+str(bet)+" points")
         else:
             addPoints(msg.author,-bet)
-            await msg.reply("you lost "+str(bet*-1)+" points")
+            await msg.reply("you lost "+str(bet)+" points")
 
 async def debt(msg: discord.Message):
     with open("player.points") as points:
