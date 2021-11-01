@@ -130,3 +130,12 @@ dmypy.json
 
 # Authentication token
 authentication.txt
+
+# Currency
+player.points
+
+# Times >getIntent has detected a swear
+times.sworn
+
+# Work cooldowns
+work.cooldowns
