@@ -145,3 +145,6 @@ jerma-text-slices/*
 
 # Old files
 archive/*
+
+# Help message; it will be generated when main.py is ran
+help.txt
