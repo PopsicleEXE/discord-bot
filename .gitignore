@@ -139,3 +139,6 @@ times.sworn
 
 # Work cooldowns
 work.cooldowns
+
+# Cached images
+jerma-text-slices/*
