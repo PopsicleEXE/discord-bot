@@ -58,14 +58,6 @@ roundPoints = {}
 
 master_char_list = list(master_x_dict.keys()) + list(bootleg_x_dict.keys())
 
-@tasks.loop(seconds=10)
-async def isRobloxUp():
-    response = requests.get('https://api.roblox.com/docs')
-    if response.content.decode().find("https://images.rbxcdn.com/6ef6e892aea640c3b1f79f0f820caca5") == -1:
-        channel = client.get_channel(850513218405400687)
-        if channel:
-            await channel.send("@everyone ROBLOX IS UP!")
-
 def addPoints(player,numPoints):
     newContent = ""
     with open("player.points") as points:
@@ -378,8 +370,6 @@ async def on_message(msg: discord.Message):
         if command:
             if command in commands:
                 await commands[command]['command'](msg)
-
-isRobloxUp.start()
 
 auth = ""
 with open("authentication.txt") as authFile:
