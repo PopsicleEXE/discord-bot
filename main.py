@@ -58,6 +58,15 @@ roundPoints = {}
 
 master_char_list = list(master_x_dict.keys()) + list(bootleg_x_dict.keys())
 
+def getPoints(player):
+    with open("player.points") as points:
+        table = json.loads(points.read())
+        points.close()
+        if str(player.id) in table:
+            return table[player.id]
+        else:
+            return 0
+
 def addPoints(player,numPoints):
     newContent = ""
     with open("player.points") as points:
@@ -280,7 +289,7 @@ async def dice(msg: discord.Message):
     diceCount = max(1,min(100,int(msg.content.split(" ")[1])))
     if not diceCount or type(diceCount) != int:
         diceCount = 1
-    if diceCount:
+    if getPoints(msg.author) >= 6*diceCount:
         roll = 0
         for i in range(diceCount):  
             randomRoll = random.randint(1,6)
@@ -293,12 +302,14 @@ async def dice(msg: discord.Message):
             await msg.reply("you lost "+str(roll*-1)+" points")
         else:
             await msg.reply("you got "+str(roll)+" points")
+    else:
+        await msg.reply("you don't have enough points to do this")
 
 async def coinFlip(msg: discord.Message):
     bet = int(msg.content.split(" ")[1])
     if type(bet) != int or not bet > 0:
         bet = 10
-    if bet > 0:
+    if getPoints(msg.author) >= bet:
         roll = random.randint(0,1)
         if roll == True:
             addPoints(msg.author,bet)
@@ -306,6 +317,8 @@ async def coinFlip(msg: discord.Message):
         else:
             addPoints(msg.author,-bet)
             await msg.reply("you lost "+str(bet)+" points")
+    else:
+        await msg.reply("you don't have enough points to do this")
 
 async def debt(msg: discord.Message):
     with open("player.points") as points:
