@@ -13,7 +13,7 @@ Usage: >timessworn
 >xxx: psycho streamer! he zerked off on stream...
 Usage: >xxx
 
->meow: 10 cats, free of charge!
+>meow: 5 cats, free of charge!
 Usage: >meow
 
 >randomline: gives you a random line out of 5000 ai-generated lines. sometimes swedish, sometimes japanese, and sometimes javascript, but always random.
@@ -24,6 +24,9 @@ Usage: >help
 
 >dice: get 2.5 billion dollars of debt
 Usage: >dice <number of dice>
+
+>coinflip: heads, tails, or crippling debt.
+Usage: >coinflip <bet>
 
 >debt: shows you how much debt you have from playing dice. or playing noita.
 Usage: >debt

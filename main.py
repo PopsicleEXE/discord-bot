@@ -63,7 +63,7 @@ def getPoints(player):
         table = json.loads(points.read())
         points.close()
         if str(player.id) in table:
-            return int(table[str(player.id)])
+            return float(table[str(player.id)])
         else:
             return 0
 
@@ -72,7 +72,7 @@ def addPoints(player,numPoints):
     with open("player.points") as points:
         table = json.loads(points.read())
         if str(player.id) in table:
-            table[player.id] = str(int(table[str(player.id)])+numPoints)
+            table[player.id] = str(float(table[str(player.id)])+numPoints)
             newContent = json.dumps(table)
         else:
             table[player.id] = str(numPoints)
@@ -286,10 +286,10 @@ async def help(msg: discord.Message):
     await msg.channel.send(file=discord.File("help.txt"))
 
 async def dice(msg: discord.Message):
-    diceCount = max(1,min(100,int(msg.content.split(" ")[1])))
+    diceCount = min(100,int(msg.content.split(" ")[1]))
     if not diceCount or type(diceCount) != int:
         diceCount = 1
-    if getPoints(msg.author) >= 6*diceCount:
+    if getPoints(msg.author) >= float(6*diceCount):
         roll = 0
         for i in range(diceCount):  
             randomRoll = random.randint(1,6)
@@ -297,7 +297,7 @@ async def dice(msg: discord.Message):
                 roll -= randomRoll
             else:
                 roll += randomRoll
-        addPoints(msg.author,roll)
+        addPoints(msg.author,float(roll))
         if roll < 0:
             await msg.reply("you lost "+str(roll*-1)+" points")
         else:
@@ -306,8 +306,8 @@ async def dice(msg: discord.Message):
         await msg.reply("you don't have enough points to do this")
 
 async def coinFlip(msg: discord.Message):
-    bet = int(msg.content.split(" ")[1])
-    if type(bet) != int or not bet > 0:
+    bet = float(msg.content.split(" ")[1])
+    if type(bet) != float or not bet > 0:
         bet = 10
     if getPoints(msg.author) >= bet:
         roll = random.randint(0,1)
@@ -324,7 +324,7 @@ async def debt(msg: discord.Message):
     with open("player.points") as points:
         table = json.loads(points.read())
         if str(msg.author.id) in table:
-            debt = int(table[str(msg.author.id)])
+            debt = float(table[str(msg.author.id)])
             if debt != 0:
                 if debt < -1:
                     await msg.channel.send("you are "+str(debt*-1)+" points in debt!")
