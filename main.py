@@ -451,8 +451,9 @@ async def viewStock(msg: discord.Message):
             shares = getShares(msg.author,symbol)
             if shares:
                 if shares == 1:
-                    message += "\nyou have 1 share, worth $"+1*price
+                    message += "\nyou have 1 share, worth $"+str(price)
                 else:
+                    print(type(shares),type(price))
                     message += "\nyou have "+str(shares)+" shares, worth $"+str(shares*price)
             await msg.reply(message)
         else:
