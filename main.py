@@ -2,6 +2,7 @@ PREFIX = ">"
 WORK_GAIN = 20
 MIN_STOCK = 0.05
 
+import enum
 import yfinance
 import json
 from time import time
@@ -112,7 +113,7 @@ def getShares(player,symbol):
                 print(playerTable[symbol])
                 return playerTable[symbol]
 
-def getAllShares(player,symbol):
+def getAllShares(player):
     with open("player.stocks") as stocks:
         table = json.loads(stocks.read())
         if str(player.id) in table:
@@ -467,6 +468,23 @@ async def viewStock(msg: discord.Message):
     else:
         await msg.reply("incorrect arguments, check "+PREFIX+"help")
 
+async def viewStocks(msg: discord.Message):
+    shares = getAllShares(msg.author)
+    message = ""
+    if shares:
+        for i,symbol in enumerate(shares):
+            shareCount = str(shares[symbol])
+            if shareCount == 1:
+                message += "you have 1 share of "+symbol+" stock"
+            else:
+                message += "you have "+shareCount+" shares of "+symbol+" stock"
+            if not i==len(shares)-1:
+                message += "\n"
+    else:
+        message = "you have no stocks"
+    
+    await msg.reply(message)
+
 async def sellStock(msg: discord.Message):
     split = msg.content.split(" ")
     symbol = split[1]
@@ -534,6 +552,7 @@ commands = {
     'work': {'command':work,'description':'work harder, not smarter','arguments':{}},
     'buystock': {'command':buyStock,'description':'stonk','arguments':{'symbol','shares'}},
     'viewstock': {'command':viewStock,'description':'view the value of a stock and the value of your shares in it','arguments':{'symbol'}},
+    'viewstocks': {'command':viewStocks,'description':'view all of your stocks','arguments':{}},
     'sellstock': {'command':sellStock,'description':'guess what this does','arguments':{'symbol','shares'}}
 }
 
