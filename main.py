@@ -510,7 +510,7 @@ async def sellStock(msg: discord.Message):
                         reaction = reactions[reaction.emoji]
                         if reaction == True:
                             addStocks(msg.author,symbol,-shares)
-                            addDollars(msg.author,-price)
+                            addDollars(msg.author,price)
                             if shares == 1:
                                 await msg.reply("transaction complete! you sold 1 share of "+symbol+" stock")
                             else:
