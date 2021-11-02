@@ -12,7 +12,6 @@ from time import time
 from PIL import Image, ImageDraw, ImageFont
 from urllib.parse import quote as urlencode
 import locale
-from locale import currency as formatCurrency
 
 # this codebase is FUCKED
 
@@ -321,9 +320,9 @@ async def debt(msg: discord.Message):
             debt = float(table[str(msg.author.id)])
             if debt != 0:
                 if debt < -1:
-                    await msg.channel.send("you are "+formatCurrency(debt*-1)+" in debt!")
+                    await msg.channel.send("you are "+locale.currency(debt*-1)+" in debt!")
                 elif debt > 1:
-                    await msg.channel.send("you have "+formatCurrency(debt))
+                    await msg.channel.send("you have "+locale.currency(debt))
                 elif debt == 1:
                     await msg.channel.send("you have $1")
                 elif debt == -1:
@@ -373,12 +372,12 @@ async def buyStock(msg: discord.Message):
             if shares >= MIN_STOCK:
                 price = info["currentPrice"]*shares
                 if price > getDollars(msg.author):
-                    await msg.reply("you don't have enough money to buy that stock; it would cost "+formatCurrency(price)+" and you have "+formatCurrency(getDollars(msg.author)));
+                    await msg.reply("you don't have enough money to buy that stock; it would cost "+locale.currency(price)+" and you have "+locale.currency(getDollars(msg.author)));
                     return
                 if shares == 1:
-                    ourMsg = await msg.reply("are you sure you want to buy 1 share of "+symbol+" stock? this will cost you "+formatCurrency(price))
+                    ourMsg = await msg.reply("are you sure you want to buy 1 share of "+symbol+" stock? this will cost you "+locale.currency(price))
                 else:
-                    ourMsg = await msg.reply("are you sure you want to buy "+str(shares)+" shares of "+symbol+" stock? this will cost you "+formatCurrency(price))
+                    ourMsg = await msg.reply("are you sure you want to buy "+str(shares)+" shares of "+symbol+" stock? this will cost you "+locale.currency(price))
                 await ourMsg.add_reaction("✅")
                 await ourMsg.add_reaction("❌")
                 def check(reaction: discord.Reaction,user: discord.User):
@@ -411,13 +410,13 @@ async def viewStock(msg: discord.Message):
         info = yfinance.Ticker(symbol).info
         if "currentPrice" in info:
             price = info["currentPrice"]
-            message = symbol+" is currently worth "+formatCurrency(price)
+            message = symbol+" is currently worth "+locale.currency(price)
             shares = getShares(msg.author,symbol)
             if shares:
                 if shares == 1:
-                    message += "\nyou have 1 share, worth "+formatCurrency(price)
+                    message += "\nyou have 1 share, worth "+locale.currency(price)
                 else:
-                    message += "\nyou have "+str(shares)+" shares, worth "+formatCurrency(shares*price)
+                    message += "\nyou have "+str(shares)+" shares, worth "+locale.currency(shares*price)
             await msg.reply(message)
         else:
             await msg.reply("invalid symbol")
@@ -490,9 +489,9 @@ async def sellStock(msg: discord.Message):
                 if shares > 0:
                     if ownedShares >= shares:
                         if shares == 1:
-                            ourMsg = await msg.reply("are you sure you want to sell 1 share of "+symbol+" stock? this will give you "+formatCurrency(price))
+                            ourMsg = await msg.reply("are you sure you want to sell 1 share of "+symbol+" stock? this will give you "+locale.currency(price))
                         else:
-                            ourMsg = await msg.reply("are you sure you want to sell "+str(shares)+" shares of "+symbol+" stock? this will give you "+formatCurrency(price))
+                            ourMsg = await msg.reply("are you sure you want to sell "+str(shares)+" shares of "+symbol+" stock? this will give you "+locale.currency(price))
                         await ourMsg.add_reaction("✅")
                         await ourMsg.add_reaction("❌")
                         def check(reaction: discord.Reaction,user: discord.User):
