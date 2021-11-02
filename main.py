@@ -422,9 +422,6 @@ async def viewStocks(msg: discord.Message):
     shares = getAllShares(msg.author)
     message = ""
     if shares:
-        for name in shares:
-            if shares[name] == 0:
-                del shares[name]
         if len(shares) == 1:
             stock = list(shares)[0]
             shareCount = shares[stock]
