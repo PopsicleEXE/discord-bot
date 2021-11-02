@@ -117,7 +117,6 @@ def getShares(player,symbol):
         if str(player.id) in table:
             playerTable = table[str(player.id)]
             if symbol in playerTable:
-                print(playerTable[symbol])
                 return playerTable[symbol]
 
 def getAllShares(player):
@@ -509,7 +508,6 @@ async def sellStock(msg: discord.Message):
                             await msg.reply("you didn't respond within one minute.")
                             return
                         reaction = reactions[reaction.emoji]
-                        print(reaction)
                         if reaction == True:
                             addStocks(msg.author,symbol,-shares)
                             addDollars(msg.author,-price)
