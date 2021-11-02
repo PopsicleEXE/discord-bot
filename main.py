@@ -496,16 +496,16 @@ async def viewStocks(msg: discord.Message):
         else:
             for i,symbol in enumerate(shares):
                 shareCount = str(shares[symbol])
-                if i==0:
+                if i == 0:
                     if shareCount == 1:
                         message += "you have 1 share of "+symbol+" stock,\n"
                     else:
                         message += "you have "+shareCount+" shares of "+symbol+" stock,\n"
                 elif i != len(shares)-1:
                     if shareCount == 1:
-                        message += "1 share of "+symbol+" stock,"
+                        message += "1 share of "+symbol+" stock,\n"
                     else:
-                        message += shareCount+" shares of "+symbol+" stock,"
+                        message += shareCount+" shares of "+symbol+" stock,\n"
                 else:
                     if shareCount == 1:
                         message += "and 1 share of "+symbol+" stock."
