@@ -466,7 +466,7 @@ async def sellStock(msg: discord.Message):
     try:
         shares = float(split[2])
     except IndexError:
-        pass
+        shares = None
 
     if symbol:
         info = yfinance.Ticker(symbol).info
