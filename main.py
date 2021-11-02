@@ -1,8 +1,10 @@
 PREFIX = ">"
 WORK_GAIN = 20
+MIN_STOCK = 0.05
 
+import yfinance
 import json
-from time import sleep,time
+from time import time
 from PIL import Image, ImageDraw, ImageFont
 from urllib.parse import quote as urlencode
 import random,os
@@ -54,33 +56,60 @@ reactions = {
     "❌": False
 }
 
-roundPoints = {}
+roundDollars = {}
 
 master_char_list = list(master_x_dict.keys()) + list(bootleg_x_dict.keys())
 
-def getPoints(player):
-    with open("player.points") as points:
-        table = json.loads(points.read())
-        points.close()
+def getDollars(player):
+    with open("player.dollars") as dollars:
+        table = json.loads(dollars.read())
+        dollars.close()
         if str(player.id) in table:
             return float(table[str(player.id)])
         else:
             return 0
 
-def addPoints(player,numPoints):
+def addDollars(player,numDollars):
     newContent = ""
-    with open("player.points") as points:
-        table = json.loads(points.read())
+    with open("player.dollars") as dollars:
+        table = json.loads(dollars.read())
         if str(player.id) in table:
-            table[player.id] = str(float(table[str(player.id)])+numPoints)
+            table[player.id] = str(float(table[str(player.id)])+numDollars)
             newContent = json.dumps(table)
         else:
-            table[player.id] = str(numPoints)
+            table[player.id] = str(numDollars)
             newContent = json.dumps(table)
-        points.close()
-    with open("player.points","w") as points:
-        points.write(newContent)
-        points.close()
+        dollars.close()
+    with open("player.dollars","w") as dollars:
+        dollars.write(newContent)
+        dollars.close()
+
+def addStocks(player,symbol,shares):
+    newContent = ""
+    with open("player.stocks") as stocks:
+        table = json.loads(stocks.read())
+        if str(player.id) in table:
+            playerTable = table[str(player.id)]
+            if symbol in playerTable:
+                playerTable[symbol] += shares
+            else:
+                table[str(player.id)][symbol] = shares
+            newContent = json.dumps(table)
+        else:
+            table[str(player.id)] = {symbol: str(shares)}
+            newContent = json.dumps(table)
+        stocks.close()
+    with open("player.stocks","w") as stocks:
+        stocks.write(newContent)
+        stocks.close()
+
+def getShares(player,symbol):
+    with open("player.stocks") as stocks:
+        table = json.loads(stocks.read())
+        if str(player.id) in table:
+            playerTable = table[str(player.id)]
+            if symbol in playerTable:
+                return playerTable[symbol]
 
 async def getSworn(msg):
     with open("times.sworn") as sworn:
@@ -195,12 +224,12 @@ async def sus(msg: discord.Message):
     await channel.send(file=discord.File(location))
 
 async def round(msg: discord.Message,checkChars: str,website: str,pageContent: str):
-    global roundPoints
+    global roundDollars
 
     player = msg.author
     channel = msg.channel
 
-    embed = discord.Embed(title='Do you think that "{chars}" appears on the website?'.format(chars=checkChars),description='You have {points} points\n\nReact with ✅ if you think "{chars}" appears on the website\nReact with 😳 if you want to quit and take your points\nReact with ❌ if you think "{chars}" does not appear on the website'.format(chars=checkChars,points=roundPoints[player.id]))
+    embed = discord.Embed(title='Do you think that "{chars}" appears on the website?'.format(chars=checkChars),description='You have {dollars} dollars\n\nReact with ✅ if you think "{chars}" appears on the website\nReact with 😳 if you want to quit and take your dollars\nReact with ❌ if you think "{chars}" does not appear on the website'.format(chars=checkChars,dollars=roundDollars[player.id]))
     ourMsg: discord.Message = await channel.send(embed=embed)
     await ourMsg.add_reaction("✅")
     await ourMsg.add_reaction("😳")
@@ -217,13 +246,13 @@ async def round(msg: discord.Message,checkChars: str,website: str,pageContent: s
     action = reactions[reaction.emoji]
 
     if action == "quit":
-        points = roundPoints[player.id]
-        if points == 0:
-            await channel.send("You quit with no points.")
-        if points == 1:
-            await channel.send("You quit with 1 point.")
+        dollars = roundDollars[player.id]
+        if dollars == 0:
+            await channel.send("You quit with no dollars.")
+        if dollars == 1:
+            await channel.send("You quit with 1 dollar.")
         else:
-            await channel.send("You quit with {points} points.".format(points=points))
+            await channel.send("You quit with {dollars} dollars.".format(dollars=dollars))
         return False,checkChars
     elif action == True:
         if pageContent.find(checkChars) > -1:
@@ -246,12 +275,12 @@ async def round(msg: discord.Message,checkChars: str,website: str,pageContent: s
 async def game(msg: discord.Message):
     global websites
     global characters
-    global roundPoints
+    global roundDollars
 
     player = msg.author
     channel = msg.channel
 
-    roundPoints[player.id] = 0
+    roundDollars[player.id] = 0
 
     website = randomWebsite()
 
@@ -261,10 +290,10 @@ async def game(msg: discord.Message):
     while True:
         success,oldChars = await round(msg,sendCharacters,website,pageContent)
         if success == True:
-            roundPoints[player.id] = len(oldChars)
+            roundDollars[player.id] = len(oldChars)
             sendCharacters += characters[random.randint(0,len(characters)-1)]
         elif success == False:
-            roundPoints[player.id] = None
+            roundDollars[player.id] = None
             break
 
 async def cat(msg: discord.Message):
@@ -289,7 +318,7 @@ async def dice(msg: discord.Message):
     diceCount = min(100,int(msg.content.split(" ")[1]))
     if not diceCount or type(diceCount) != int:
         diceCount = 1
-    if getPoints(msg.author) >= float(6*diceCount):
+    if getDollars(msg.author) >= float(6*diceCount):
         roll = 0
         for i in range(diceCount):  
             randomRoll = random.randint(1,6)
@@ -297,48 +326,48 @@ async def dice(msg: discord.Message):
                 roll -= randomRoll
             else:
                 roll += randomRoll
-        addPoints(msg.author,float(roll))
+        addDollars(msg.author,float(roll))
         if roll < 0:
-            await msg.reply("you lost "+str(roll*-1)+" points")
+            await msg.reply("you lost "+str(roll*-1)+" dollars")
         else:
-            await msg.reply("you got "+str(roll)+" points")
+            await msg.reply("you got "+str(roll)+" dollars")
     else:
-        await msg.reply("you don't have enough points to do this")
+        await msg.reply("you don't have enough dollars to do this")
 
 async def coinFlip(msg: discord.Message):
     bet = float(msg.content.split(" ")[1])
     if type(bet) != float or not bet > 0:
         bet = 10
-    if getPoints(msg.author) >= bet:
+    if getDollars(msg.author) >= bet:
         roll = random.randint(0,1)
         if roll == True:
-            addPoints(msg.author,bet)
-            await msg.reply("you got "+str(bet)+" points")
+            addDollars(msg.author,bet)
+            await msg.reply("you got "+str(bet)+" dollars")
         else:
-            addPoints(msg.author,-bet)
-            await msg.reply("you lost "+str(bet)+" points")
+            addDollars(msg.author,-bet)
+            await msg.reply("you lost "+str(bet)+" dollars")
     else:
-        await msg.reply("you don't have enough points to do this")
+        await msg.reply("you don't have enough dollars to do this")
 
 async def debt(msg: discord.Message):
-    with open("player.points") as points:
-        table = json.loads(points.read())
+    with open("player.dollars") as dollars:
+        table = json.loads(dollars.read())
         if str(msg.author.id) in table:
             debt = float(table[str(msg.author.id)])
             if debt != 0:
                 if debt < -1:
-                    await msg.channel.send("you are "+str(debt*-1)+" points in debt!")
+                    await msg.channel.send("you are "+str(debt*-1)+" dollars in debt!")
                 elif debt > 1:
-                    await msg.channel.send("you have "+str(debt)+" points")
+                    await msg.channel.send("you have "+str(debt)+" dollars")
                 elif debt == 1:
-                    await msg.channel.send("you have 1 point")
+                    await msg.channel.send("you have 1 dollar")
                 elif debt == -1:
-                    await msg.channel.send("you are 1 point in debt")
+                    await msg.channel.send("you are 1 dollar in debt")
             else:
-                await msg.channel.send("you have no points")
+                await msg.channel.send("you have no dollars")
         else:
-            await msg.channel.send("you have no points")
-        points.close()
+            await msg.channel.send("you have no dollars")
+        dollars.close()
 
 def setCooldown(msg: discord.Message):
     newContent = ""
@@ -364,10 +393,120 @@ async def work(msg: discord.Message):
             canWork = True
             setCooldown(msg)
     if canWork:
-        addPoints(msg.author,WORK_GAIN)
-        await msg.channel.send("you worked for an hour and gained "+str(WORK_GAIN)+" points.")
+        addDollars(msg.author,WORK_GAIN)
+        await msg.channel.send("you worked for an hour and gained "+str(WORK_GAIN)+" dollars.")
     else:
         await msg.channel.send("you need to wait "+str(int(3600-(time()-lastTime)))+" more seconds to work again")
+
+async def buyStock(msg: discord.Message):
+    split = msg.content.split(" ")
+    symbol = split[1].lower()
+    shares = float(split[2])
+    if symbol and shares:
+        info = yfinance.Ticker(symbol).info
+        if "currentPrice" in info:
+            if shares >= MIN_STOCK:
+                price = info["currentPrice"]*shares
+                if price > getDollars(msg.author):
+                    await msg.reply("you don't have enough money to buy that stock; it would cost $"+str(price)+" and you have $"+str(getDollars(msg.author)));
+                    return
+                if shares == 1:
+                    ourMsg = await msg.reply("are you sure you want to buy 1 share of "+symbol+" stock? this will cost you $"+str(price))
+                else:
+                    ourMsg = await msg.reply("are you sure you want to buy "+str(shares)+" shares of "+symbol+" stock? this will cost you $"+str(price))
+                await ourMsg.add_reaction("✅")
+                await ourMsg.add_reaction("❌")
+                def check(reaction: discord.Reaction,user: discord.User):
+                    if user.id == msg.author.id and (reaction.emoji == "✅" or reaction.emoji == "❌"): return True
+                try:
+                    reaction,user = discord.Reaction = await client.wait_for("reaction_add",check=check,timeout=60)
+                except asyncio.TimeoutError:
+                    await msg.reply("you didn't respond within one minute.")
+                    return
+                reaction = reactions[reaction.emoji]
+                print(reaction)
+                if reaction == True:
+                    addStocks(msg.author,symbol,shares)
+                    addDollars(msg.author,-price)
+                    if shares == 1:
+                        await msg.reply("transaction complete! you purchased 1 share of "+symbol+" stock")
+                    else:
+                        await msg.reply("transaction complete! you purchased "+str(shares)+" shares of "+symbol+" stock")
+                else:
+                    await msg.reply("transaction cancelled")
+            else:
+                await msg.reply("the minimum number of shares you can buy is "+str(MIN_STOCK))
+        else:
+            await msg.reply("invalid symbol")
+    else:
+        await msg.reply("incorrect arguments, check "+PREFIX+"help")
+
+async def viewStock(msg: discord.Message):
+    symbol = msg.content.split(" ")[1]
+    if symbol:
+        info = yfinance.Ticker(symbol).info
+        if "currentPrice" in info:
+            price = info["currentPrice"]
+            message = symbol+" is currently worth $"+str(price)
+            shares = getShares(msg.author,symbol)
+            if shares:
+                if shares == 1:
+                    message += "\nyou have 1 share, worth $"+1*price
+                else:
+                    message += "\nyou have "+str(shares)+" shares, worth $"+str(shares*price)
+            await msg.reply(message)
+        else:
+            await msg.reply("invalid symbol")
+    else:
+        await msg.reply("incorrect arguments, check "+PREFIX+"help")
+
+async def sellStock(msg: discord.Message):
+    split = msg.content.split(" ")
+    symbol = split[1]
+    shares = float(split[2])
+
+    if symbol and shares:
+        info = yfinance.Ticker(symbol).info
+        if "currentPrice" in info:
+            ownedShares = getShares(msg.author,symbol)
+            price = info["currentPrice"]*shares
+            if ownedShares:
+                if shares > 0:
+                    if ownedShares >= shares:
+                        if shares == 1:
+                            ourMsg = await msg.reply("are you sure you want to sell 1 share of "+symbol+" stock? this will give you $"+str(price))
+                        else:
+                            ourMsg = await msg.reply("are you sure you want to sell "+str(shares)+" shares of "+symbol+" stock? this will give you $"+str(price))
+                        await ourMsg.add_reaction("✅")
+                        await ourMsg.add_reaction("❌")
+                        def check(reaction: discord.Reaction,user: discord.User):
+                            if user.id == msg.author.id and (reaction.emoji == "✅" or reaction.emoji == "❌"): return True
+                        try:
+                            reaction,user = discord.Reaction = await client.wait_for("reaction_add",check=check,timeout=60)
+                        except asyncio.TimeoutError:
+                            await msg.reply("you didn't respond within one minute.")
+                            return
+                        reaction = reactions[reaction.emoji]
+                        print(reaction)
+                        if reaction == True:
+                            addStocks(msg.author,symbol,-shares)
+                            addDollars(msg.author,-price)
+                            if shares == 1:
+                                await msg.reply("transaction complete! you sold 1 share of "+symbol+" stock")
+                            else:
+                                await msg.reply("transaction complete! you sold "+str(shares)+" shares of "+symbol+" stock")
+                        else:
+                            await msg.reply("transaction cancelled")
+                    else:
+                        await msg.reply("you don't own that many shares")
+                else:
+                    await msg.reply("you cannot sell "+shares+" shares")
+            else:
+                await msg.reply("you don't own any of that stock")
+        else:
+            await msg.replt("invalid symbol")
+    else:
+        await msg.reply("incorrect arguments, check "+PREFIX+"help")
 
 commands = {
     'wordgame': {'command':game,'description':'guess whether or not random combinations of letters appear on a randomly selected wikipedia page','arguments':{}},
@@ -381,7 +520,10 @@ commands = {
     'dice': {'command':dice,'description':'get 2.5 billion dollars of debt','arguments':{'number of dice'}},
     'coinflip': {'command':coinFlip,'description':'heads, tails, or crippling debt.','arguments':{'bet'}},
     'debt': {'command':debt,'description':'shows you how much debt you have from playing dice. or playing noita.','arguments':{}},
-    'work': {'command':work,'description':'work harder, not smarter','arguments':{}}
+    'work': {'command':work,'description':'work harder, not smarter','arguments':{}},
+    'buystock': {'command':buyStock,'description':'stonk','arguments':{'symbol','shares'}},
+    'viewstock': {'command':viewStock,'description':'view the value of a stock and the value of your shares in it','arguments':{'symbol'}},
+    'sellstock': {'command':sellStock,'description':'guess what this does','arguments':{'symbol','shares'}}
 }
 
 helpMessage = ""

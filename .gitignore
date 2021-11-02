@@ -132,7 +132,7 @@ dmypy.json
 authentication.txt
 
 # Currency
-player.points
+player.dollars
 
 # Times >getIntent has detected a swear
 times.sworn
@@ -148,3 +148,6 @@ archive/*
 
 # Help message; it will be generated when main.py is ran
 help.txt
+
+# Stocks
+player.stocks
