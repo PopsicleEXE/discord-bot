@@ -119,6 +119,12 @@ def getAllShares(player):
         table = json.loads(stocks.read())
         if str(player.id) in table:
             playerTable = table[str(player.id)]
+            rem = {}
+            for name in playerTable:
+                if playerTable[name] == 0:
+                    rem[name] = True
+            for index in rem:
+                del playerTable[index]
             return playerTable
 
 async def getSworn(msg):
