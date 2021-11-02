@@ -463,7 +463,10 @@ async def viewStock(msg: discord.Message):
 async def sellStock(msg: discord.Message):
     split = msg.content.split(" ")
     symbol = split[1]
-    shares = float(split[2])
+    try:
+        shares = float(split[2])
+    except IndexError:
+        pass
 
     if symbol:
         info = yfinance.Ticker(symbol).info
