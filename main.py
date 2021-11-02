@@ -112,6 +112,13 @@ def getShares(player,symbol):
                 print(playerTable[symbol])
                 return playerTable[symbol]
 
+def getAllShares(player,symbol):
+    with open("player.stocks") as stocks:
+        table = json.loads(stocks.read())
+        if str(player.id) in table:
+            playerTable = table[str(player.id)]
+            return playerTable
+
 async def getSworn(msg):
     with open("times.sworn") as sworn:
         await msg.channel.send(sworn.read())
@@ -310,7 +317,7 @@ async def randomLine(msg: discord.Message):
 async def zerkOff(msg: discord.message):
     dm = await msg.author.create_dm()
     for i in range(5):
-        await dm.send(file=discord.File("jermaZerk.gif"))     
+        await dm.send("https://media.discordapp.net/attachments/904901953102958603/904901963701973042/jermaZerk.gif")     
 
 async def help(msg: discord.Message):
     await msg.channel.send(file=discord.File("help.txt"))
