@@ -365,12 +365,12 @@ async def buyStock(msg: discord.Message):
             if shares >= MIN_STOCK:
                 price = info["currentPrice"]*shares
                 if price > getDollars(msg.author):
-                    await msg.reply("you don't have enough money to buy that stock; it would cost $"+str(price)+" and you have $"+str(getDollars(msg.author)));
+                    await msg.reply("you don't have enough money to buy that stock; it would cost $"+formatCurrency(str(price))+" and you have $"+formatCurrency(str(getDollars(msg.author))));
                     return
                 if shares == 1:
-                    ourMsg = await msg.reply("are you sure you want to buy 1 share of "+symbol+" stock? this will cost you $"+str(price))
+                    ourMsg = await msg.reply("are you sure you want to buy 1 share of "+symbol+" stock? this will cost you $"+formatCurrency(str(price)))
                 else:
-                    ourMsg = await msg.reply("are you sure you want to buy "+str(shares)+" shares of "+symbol+" stock? this will cost you $"+str(price))
+                    ourMsg = await msg.reply("are you sure you want to buy "+str(shares)+" shares of "+symbol+" stock? this will cost you $"+formatCurrency(str(price)))
                 await ourMsg.add_reaction("✅")
                 await ourMsg.add_reaction("❌")
                 def check(reaction: discord.Reaction,user: discord.User):
@@ -403,13 +403,13 @@ async def viewStock(msg: discord.Message):
         info = yfinance.Ticker(symbol).info
         if "currentPrice" in info:
             price = info["currentPrice"]
-            message = symbol+" is currently worth $"+str(price)
+            message = symbol+" is currently worth $"+formatCurrency(str(price))
             shares = getShares(msg.author,symbol)
             if shares:
                 if shares == 1:
-                    message += "\nyou have 1 share, worth $"+str(price)
+                    message += "\nyou have 1 share, worth $"+formatCurrency(str(price))
                 else:
-                    message += "\nyou have "+str(shares)+" shares, worth $"+str(shares*price)
+                    message += "\nyou have "+str(shares)+" shares, worth $"+formatCurrency(str(shares*price))
             await msg.reply(message)
         else:
             await msg.reply("invalid symbol")
@@ -482,9 +482,9 @@ async def sellStock(msg: discord.Message):
                 if shares > 0:
                     if ownedShares >= shares:
                         if shares == 1:
-                            ourMsg = await msg.reply("are you sure you want to sell 1 share of "+symbol+" stock? this will give you $"+str(price))
+                            ourMsg = await msg.reply("are you sure you want to sell 1 share of "+symbol+" stock? this will give you $"+formatCurrency(str(price)))
                         else:
-                            ourMsg = await msg.reply("are you sure you want to sell "+str(shares)+" shares of "+symbol+" stock? this will give you $"+str(price))
+                            ourMsg = await msg.reply("are you sure you want to sell "+str(shares)+" shares of "+symbol+" stock? this will give you $"+formatCurrency(str(price)))
                         await ourMsg.add_reaction("✅")
                         await ourMsg.add_reaction("❌")
                         def check(reaction: discord.Reaction,user: discord.User):
