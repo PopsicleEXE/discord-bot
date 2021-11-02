@@ -109,6 +109,7 @@ def getShares(player,symbol):
         if str(player.id) in table:
             playerTable = table[str(player.id)]
             if symbol in playerTable:
+                print(playerTable[symbol])
                 return playerTable[symbol]
 
 async def getSworn(msg):
@@ -424,7 +425,6 @@ async def buyStock(msg: discord.Message):
                     await msg.reply("you didn't respond within one minute.")
                     return
                 reaction = reactions[reaction.emoji]
-                print(reaction)
                 if reaction == True:
                     addStocks(msg.author,symbol,shares)
                     addDollars(msg.author,-price)
@@ -453,7 +453,6 @@ async def viewStock(msg: discord.Message):
                 if shares == 1:
                     message += "\nyou have 1 share, worth $"+str(price)
                 else:
-                    print(type(shares),type(price))
                     message += "\nyou have "+str(shares)+" shares, worth $"+str(shares*price)
             await msg.reply(message)
         else:
@@ -466,10 +465,11 @@ async def sellStock(msg: discord.Message):
     symbol = split[1]
     shares = float(split[2])
 
-    if symbol and shares:
+    if symbol:
         info = yfinance.Ticker(symbol).info
         if "currentPrice" in info:
             ownedShares = getShares(msg.author,symbol)
+            if not shares: shares = ownedShares
             price = info["currentPrice"]*shares
             if ownedShares:
                 if shares > 0:
