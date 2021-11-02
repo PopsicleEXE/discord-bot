@@ -472,14 +472,31 @@ async def viewStocks(msg: discord.Message):
     shares = getAllShares(msg.author)
     message = ""
     if shares:
-        for i,symbol in enumerate(shares):
-            shareCount = str(shares[symbol])
+        if len(shares) == 1:
+            stock = list(shares)[0]
+            shareCount = shares[stock]
             if shareCount == 1:
-                message += "you have 1 share of "+symbol+" stock"
+                message = "you have 1 share of "+stock+" stock"
             else:
-                message += "you have "+shareCount+" shares of "+symbol+" stock"
-            if not i==len(shares)-1:
-                message += "\n"
+                message = "you have "+str(shares[stock])+" shares of "+stock+" stock"
+        else:
+            for i,symbol in enumerate(shares):
+                shareCount = str(shares[symbol])
+                if i==0:
+                    if shareCount == 1:
+                        message += "you have 1 share of "+symbol+" stock,\n"
+                    else:
+                        message += "you have "+shareCount+" shares of "+symbol+" stock,\n"
+                elif i != len(shares)-1:
+                    if shareCount == 1:
+                        message += "1 share of "+symbol+" stock,"
+                    else:
+                        message += shareCount+" shares of "+symbol+" stock,"
+                else:
+                    if shareCount == 1:
+                        message += "and 1 share of "+symbol+" stock."
+                    else:
+                        message += "and "+shareCount+" shares of "+symbol+" stock."
     else:
         message = "you have no stocks"
     
