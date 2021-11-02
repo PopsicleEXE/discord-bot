@@ -2,17 +2,16 @@ PREFIX = ">"
 WORK_GAIN = 20
 MIN_STOCK = 0.05
 
-import enum
 import yfinance
 import json
-from time import time
-from PIL import Image, ImageDraw, ImageFont
-from urllib.parse import quote as urlencode
 import random,os
-from discord.ext import tasks
 import requests
 import asyncio
 import discord
+from time import time
+from PIL import Image, ImageDraw, ImageFont
+from urllib.parse import quote as urlencode
+from locale import currency as formatCurrency
 
 # this codebase is FUCKED
 
@@ -231,57 +230,6 @@ async def sus(msg: discord.Message):
 
     final_image.save(location)
     await channel.send(file=discord.File(location))
-
-async def round(msg: discord.Message,checkChars: str,website: str,pageContent: str):
-    global roundDollars
-
-    player = msg.author
-    channel = msg.channel
-
-    embed = discord.Embed(title='Do you think that "{chars}" appears on the website?'.format(chars=checkChars),description='You have {dollars} dollars\n\nReact with ✅ if you think "{chars}" appears on the website\nReact with 😳 if you want to quit and take your dollars\nReact with ❌ if you think "{chars}" does not appear on the website'.format(chars=checkChars,dollars=roundDollars[player.id]))
-    ourMsg: discord.Message = await channel.send(embed=embed)
-    await ourMsg.add_reaction("✅")
-    await ourMsg.add_reaction("😳")
-    await ourMsg.add_reaction("❌")
-
-    def check(reaction: discord.Reaction,user: discord.User):
-        if user.id == player.id and (reaction.emoji == "✅" or reaction.emoji == "😳" or reaction.emoji == "❌"): return True
-    try:
-        reaction,user = discord.Reaction = await client.wait_for("reaction_add",check=check,timeout=60)
-    except asyncio.TimeoutError:
-        await channel.send("You didn't respond within one minute.")
-        return False,checkChars
-    
-    action = reactions[reaction.emoji]
-
-    if action == "quit":
-        dollars = roundDollars[player.id]
-        if dollars == 0:
-            await channel.send("You quit with no dollars.")
-        if dollars == 1:
-            await channel.send("You quit with 1 dollar.")
-        else:
-            await channel.send("You quit with {dollars} dollars.".format(dollars=dollars))
-        return False,checkChars
-    elif action == True:
-        if pageContent.find(checkChars) > -1:
-            await channel.send('"{chars}" was in the website!'.format(chars=checkChars))
-            return True,checkChars
-        else:
-            await channel.send('"{chars}" did not appear on the website.'.format(chars=checkChars))
-            await channel.send('The website was {website}'.format(website=website))
-            return False,checkChars
-    elif action == False:
-        if pageContent.find(checkChars) == -1:
-            await channel.send('"{chars}" did not appear on the website!'.format(chars=checkChars))
-            await channel.send('The website was {website}'.format(website=website))
-            return False,checkChars
-        else:
-            await channel.send('"{chars}" was in the website.'.format(chars=checkChars))
-            await channel.send('The website was {website}'.format(website=website))
-            return False,checkChars
-
-async def game(msg: discord.Message):
     global websites
     global characters
     global roundDollars
@@ -569,7 +517,6 @@ async def sellStock(msg: discord.Message):
         await msg.reply("incorrect arguments, check "+PREFIX+"help")
 
 commands = {
-    'wordgame': {'command':game,'description':'guess whether or not random combinations of letters appear on a randomly selected wikipedia page','arguments':{}},
     'sussy': {'command':sus,'description':"takes random slices of jerma985's face and makes them a bootleg when the imposter is sus",'arguments': {'string'}},
     'getintent': {'command':getIntent,'description':"uses ai to detect if your input is swearing, and if so adds to the swear counter",'arguments': {'string'}},
     'timessworn': {'command':getSworn,'description':"tells you how many times the ai has evaluated something as swearing in the stinky men server",'arguments':{}},
