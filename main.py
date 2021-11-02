@@ -471,7 +471,7 @@ async def sellStock(msg: discord.Message):
     if symbol:
         info = yfinance.Ticker(symbol).info
         if "currentPrice" in info:
-            ownedShares = getShares(msg.author,symbol)
+            ownedShares = float(getShares(msg.author,symbol))
             if not shares: shares = ownedShares
             price = info["currentPrice"]*shares
             if ownedShares:
