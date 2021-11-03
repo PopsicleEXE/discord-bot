@@ -154,7 +154,7 @@ async def getIntent(msg):
     del split[0]
     string = " ".join(split)
 
-    response = requests.get("https://api.wit.ai/message?v=20211029&q="+urlencode(string,safe=''),headers={'Authorization': "Bearer VFPHAGA34A37HYXPRB7XAABGXSW6LX6N"})
+    response = requests.get("https://api.wit.ai/message?v=20211029&q="+urlencode(string,safe=''),headers={'Authorization': "Bearer 5KQTUQDHND5GUGKVA4FE6OLNVPNZPKWB"})
     intent = 'swear'
     highestConfidence = 0
     for intentDict in response.json()['intents']:
