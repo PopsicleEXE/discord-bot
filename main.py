@@ -298,7 +298,7 @@ async def dice(msg: discord.Message):
         else:
             await msg.reply("you got "+str(roll)+" dollars")
     else:
-        await msg.reply("you don't have enough dollars to do this")
+        await msg.reply("you don't have enough money to do this")
 
 async def coinFlip(msg: discord.Message):
     bet = float(msg.content.split(" ")[1])
@@ -313,7 +313,7 @@ async def coinFlip(msg: discord.Message):
             addDollars(msg.author,-bet)
             await msg.reply("you lost "+str(bet)+" dollars")
     else:
-        await msg.reply("you don't have enough dollars to do this")
+        await msg.reply("you don't have enough money to do this")
 
 async def debt(msg: discord.Message):
     with open("player.dollars") as dollars:
