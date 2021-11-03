@@ -2,13 +2,9 @@ PREFIX = ">"
 WORK_GAIN = 20
 MIN_STOCK = 0.05
 
-import yfinance
-import json
-import random,os
-import requests
-import asyncio
-import discord
+import yfinance,json,random,os,requests,asyncio,discord
 from time import time
+from difflib import SequenceMatcher as sm
 from PIL import Image, ImageDraw, ImageFont
 from urllib.parse import quote as urlencode
 
@@ -569,6 +565,14 @@ async def on_message(msg: discord.Message):
         if command:
             if command in commands:
                 await commands[command]['command'](msg)
+            else:
+                message = "did you mean:"
+                for commandName in commands:
+                    if sm(a=command,b=commandName).ratio() >= .75:
+                        message += "\n"+PREFIX+commandName
+                if message != "did you mean:":
+                    await msg.reply(message)
+
 
 auth = ""
 with open("authentication.txt") as authFile:
