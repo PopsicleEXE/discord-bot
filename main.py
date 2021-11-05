@@ -573,7 +573,6 @@ async def on_message(msg: discord.Message):
                 if message != "did you mean:":
                     await msg.reply(message)
 
-
 auth = ""
 with open("authentication.txt") as authFile:
     auth = authFile.read()
